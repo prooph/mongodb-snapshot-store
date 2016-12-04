@@ -13,8 +13,8 @@ declare(strict_types=1);
 namespace Prooph\MongoDB\SnapshotStore;
 
 use DateTimeImmutable;
-use MongoDB\Client;
 use MongoDB\BSON\UTCDateTime;
+use MongoDB\Client;
 use MongoDB\Driver\ReadConcern;
 use MongoDB\Driver\WriteConcern;
 use MongoDB\GridFS\Exception\FileNotFoundException;
@@ -84,7 +84,7 @@ final class MongoDBSnapshotStore implements SnapshotStore
     {
         $bucket = $this->client->selectDatabase($this->dbName)->selectGridFSBucket([
             'bucketName' => $this->getGridFsName($aggregateType),
-            'readConcern' => $this->readConcern
+            'readConcern' => $this->readConcern,
         ]);
 
         try {
@@ -126,7 +126,7 @@ final class MongoDBSnapshotStore implements SnapshotStore
 
         $bucket = $this->client->selectDatabase($this->dbName)->selectGridFSBucket([
             'bucketName' => $this->getGridFsName($aggregateType),
-            'writeConcern' => $this->writeConcern
+            'writeConcern' => $this->writeConcern,
         ]);
 
         $createdAt = new UTCDateTime(
