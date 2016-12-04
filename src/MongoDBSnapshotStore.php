@@ -94,10 +94,6 @@ final class MongoDBSnapshotStore implements SnapshotStore
             return null;
         }
 
-        var_dump($bucket->getFileDocumentForStream($stream));
-        die;
-        var_dump($bucket->getFileIdForStream($stream));
-        die;
         $metadata = $bucket->getFileDocumentForStream($stream);
         $createdAt = $metadata->created_at->toDateTime();
 
