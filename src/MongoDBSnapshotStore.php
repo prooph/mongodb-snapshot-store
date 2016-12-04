@@ -94,10 +94,9 @@ final class MongoDBSnapshotStore implements SnapshotStore
             return null;
         }
 
-        $metadata = $bucket->getFileDocumentForStream($stream);
-        $createdAt = $metadata->created_at->toDateTime();
-
         try {
+            $metadata = $bucket->getFileDocumentForStream($stream);
+            $createdAt = $metadata->created_at->toDateTime();
             $aggregateRoot = unserialize(stream_get_contents($stream));
         } catch (\Throwable $e) {
             // problem getting file from mongodb

@@ -15,7 +15,7 @@ namespace ProophTest\MongoDB\SnapshotStore;
 use MongoDB\Client;
 use MongoDB\Driver\ReadPreference;
 use MongoDB\Operation\Find;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use Prooph\EventSourcing\Aggregate\AggregateType;
 use Prooph\EventSourcing\Snapshot\Snapshot;
 use Prooph\MongoDB\SnapshotStore\MongoDBSnapshotStore;
