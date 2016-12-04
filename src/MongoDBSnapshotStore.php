@@ -94,8 +94,10 @@ final class MongoDBSnapshotStore implements SnapshotStore
             return null;
         }
 
-        var_dump($bucket->getFileDocumentForStream($stream)); die;
-        var_dump($bucket->getFileIdForStream($stream)); die;
+        var_dump($bucket->getFileDocumentForStream($stream));
+        die;
+        var_dump($bucket->getFileIdForStream($stream));
+        die;
         $metadata = $bucket->getFileDocumentForStream($stream);
         $createdAt = $metadata->created_at->toDateTime();
 
@@ -150,7 +152,7 @@ final class MongoDBSnapshotStore implements SnapshotStore
                     'last_version' => $snapshot->lastVersion(),
                     'created_at' => $createdAt,
                 ],
-                '_id' => $snapshot->aggregateId()
+                '_id' => $snapshot->aggregateId(),
             ]
         );
     }
