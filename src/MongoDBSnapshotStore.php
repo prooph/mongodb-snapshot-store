@@ -94,6 +94,8 @@ final class MongoDBSnapshotStore implements SnapshotStore
             return null;
         }
 
+        var_dump($bucket->getFileDocumentForStream($stream)); die;
+        var_dump($bucket->getFileIdForStream($stream)); die;
         $metadata = $bucket->getFileDocumentForStream($stream);
         $createdAt = $metadata->created_at->toDateTime();
 
@@ -101,14 +103,14 @@ final class MongoDBSnapshotStore implements SnapshotStore
             $aggregateRoot = unserialize(stream_get_contents($stream));
         } catch (\Throwable $e) {
             // problem getting file from mongodb
-            return;
+            return null;
         }
 
         $aggregateTypeString = $aggregateType->toString();
 
         if (! $aggregateRoot instanceof $aggregateTypeString) {
             // invalid instance returned
-            return;
+            return null;
         }
 
         return new Snapshot(
@@ -133,6 +135,12 @@ final class MongoDBSnapshotStore implements SnapshotStore
             $snapshot->createdAt()->getTimestamp() * 1000 + (int) $snapshot->createdAt()->format('u')
         );
 
+        try {
+            $bucket->delete($snapshot->aggregateId());
+        } catch (\Throwable $e) {
+            // ignore
+        }
+
         $bucket->uploadFromStream(
             $snapshot->aggregateId(),
             $this->createStream(serialize($snapshot->aggregateRoot())),
@@ -142,6 +150,7 @@ final class MongoDBSnapshotStore implements SnapshotStore
                     'last_version' => $snapshot->lastVersion(),
                     'created_at' => $createdAt,
                 ],
+                '_id' => $snapshot->aggregateId()
             ]
         );
     }
@@ -159,8 +168,10 @@ final class MongoDBSnapshotStore implements SnapshotStore
 
     /**
      * Creates an in-memory stream with the given data.
+     *
+     * @return resource
      */
-    protected function createStream(string $data = ''): resource
+    protected function createStream(string $data = '')
     {
         $stream = fopen('php://temp', 'w+b');
         fwrite($stream, $data);

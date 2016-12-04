@@ -12,6 +12,12 @@ MongoDB implementation of snapshot store
 
 You can install prooph/mongodb-snapshot-store via composer by adding `"prooph/mongodb-snapshot-store": "^1.0"` as requirement to your composer.json.
 
+## Requirements
+
+- PHP 7.1
+- MongoDB >= 3.2
+- PHP MongoDB Extension
+
 ## Support
 
 - Ask questions on [prooph-users](https://groups.google.com/forum/?hl=de#!forum/prooph) mailing list.
