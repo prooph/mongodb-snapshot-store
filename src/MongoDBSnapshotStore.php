@@ -88,15 +88,15 @@ final class MongoDBSnapshotStore implements SnapshotStore
         ]);
 
         try {
-            $stream = $this->createStream();
-            $bucket->downloadToStream($aggregateId, $stream);
+            $gridFsStream = $bucket->openDownloadStream($aggregateId);
         } catch (FileNotFoundException $e) {
             return null;
         }
 
         try {
-            $metadata = $bucket->getFileDocumentForStream($stream);
-            $createdAt = $metadata->created_at->toDateTime();
+            $metadata = $bucket->getFileDocumentForStream($gridFsStream);
+            $createdAt = $metadata->metadata->created_at->toDateTime();
+            $stream = stream_copy_to_stream($gridFsStream, $this->createStream());
             $aggregateRoot = unserialize(stream_get_contents($stream));
         } catch (\Throwable $e) {
             // problem getting file from mongodb

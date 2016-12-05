@@ -59,8 +59,6 @@ class MongoDBSnapshotStoreTest extends TestCase
         $this->assertNull($this->snapshotStore->get($aggregateType, 'invalid'));
 
         $readSnapshot = $this->snapshotStore->get($aggregateType, 'id');
-        var_dump($readSnapshot);
-        die;
         $this->assertEquals($snapshot, $readSnapshot);
 
         $server = $this->client->getManager()->selectServer(new ReadPreference(ReadPreference::RP_PRIMARY));
