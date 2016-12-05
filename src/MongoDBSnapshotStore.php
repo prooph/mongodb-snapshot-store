@@ -96,8 +96,9 @@ final class MongoDBSnapshotStore implements SnapshotStore
         try {
             $metadata = $bucket->getFileDocumentForStream($gridFsStream);
             $createdAt = $metadata->metadata->created_at->toDateTime();
-            $stream = stream_copy_to_stream($gridFsStream, $this->createStream());
-            $aggregateRoot = unserialize(stream_get_contents($stream));
+            $destination = $this->createStream();
+            stream_copy_to_stream($gridFsStream, $destination);
+            $aggregateRoot = unserialize(stream_get_contents($destination));
         } catch (\Throwable $e) {
             // problem getting file from mongodb
             return null;
@@ -121,6 +122,7 @@ final class MongoDBSnapshotStore implements SnapshotStore
 
     public function save(Snapshot $snapshot): void
     {
+        $aggregateId = $snapshot->aggregateId();
         $aggregateType = $snapshot->aggregateType();
 
         $bucket = $this->client->selectDatabase($this->dbName)->selectGridFSBucket([
@@ -133,21 +135,21 @@ final class MongoDBSnapshotStore implements SnapshotStore
         );
 
         try {
-            $bucket->delete($snapshot->aggregateId());
+            $bucket->delete($aggregateId);
         } catch (\Throwable $e) {
             // ignore
         }
 
         $bucket->uploadFromStream(
-            $snapshot->aggregateId(),
+            $aggregateId,
             $this->createStream(serialize($snapshot->aggregateRoot())),
             [
+                '_id' => $aggregateId,
                 'metadata' => [
                     'aggregate_type' => $aggregateType->toString(),
                     'last_version' => $snapshot->lastVersion(),
                     'created_at' => $createdAt,
                 ],
-                '_id' => $snapshot->aggregateId(),
             ]
         );
     }
