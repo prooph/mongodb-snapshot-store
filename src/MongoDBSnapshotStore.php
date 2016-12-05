@@ -170,7 +170,7 @@ final class MongoDBSnapshotStore implements SnapshotStore
      *
      * @return resource
      */
-    protected function createStream(string $data = '')
+    private function createStream(string $data = '')
     {
         $stream = fopen('php://temp', 'w+b');
         fwrite($stream, $data);
