@@ -87,8 +87,6 @@ final class MongoDBSnapshotStore implements SnapshotStore
             'readConcern' => $this->readConcern,
         ]);
 
-        $destination = $this->createStream();
-
         try {
             $stream = $bucket->openDownloadStream($aggregateId);
         } catch (FileNotFoundException $e) {
@@ -100,6 +98,7 @@ final class MongoDBSnapshotStore implements SnapshotStore
             $createdAt = $metadata->metadata->created_at;
             $lastVersion = $metadata->metadata->last_version;
 
+            $destination = $this->createStream();
             stream_copy_to_stream($stream, $destination);
             $aggregateRoot = unserialize(stream_get_contents($destination, -1, 0));
         } catch (\Throwable $e) {
