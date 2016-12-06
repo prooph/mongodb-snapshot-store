@@ -13,7 +13,7 @@ declare(strict_types=1);
 namespace Prooph\MongoDB\SnapshotStore;
 
 use DateTimeImmutable;
-use MongoDB\BSON\UTCDateTime;
+use DateTimeZone;
 use MongoDB\Client;
 use MongoDB\Driver\ReadConcern;
 use MongoDB\Driver\WriteConcern;
@@ -87,20 +87,23 @@ final class MongoDBSnapshotStore implements SnapshotStore
             'readConcern' => $this->readConcern,
         ]);
 
+        $destination = $this->createStream();
+
         try {
-            $gridFsStream = $bucket->openDownloadStream($aggregateId);
+            $stream = $bucket->openDownloadStream($aggregateId);
         } catch (FileNotFoundException $e) {
             return null;
         }
 
         try {
-            $metadata = $bucket->getFileDocumentForStream($gridFsStream);
-            $createdAt = $metadata->metadata->created_at->toDateTime();
-            $destination = $this->createStream();
-            stream_copy_to_stream($gridFsStream, $destination);
-            $aggregateRoot = unserialize(stream_get_contents($destination));
+            $metadata = $bucket->getFileDocumentForStream($stream);
+            $createdAt = $metadata->metadata->created_at;
+            $lastVersion = $metadata->metadata->last_version;
+
+            stream_copy_to_stream($stream, $destination);
+            $aggregateRoot = unserialize(stream_get_contents($destination, -1, 0));
         } catch (\Throwable $e) {
-            // problem getting file from mongodb
+            // problem getting file from mongo or during unserialize
             return null;
         }
 
@@ -115,8 +118,8 @@ final class MongoDBSnapshotStore implements SnapshotStore
             $aggregateType,
             $aggregateId,
             $aggregateRoot,
-            $metadata->last_version,
-            DateTimeImmutable::createFromMutable($createdAt)
+            $lastVersion,
+            DateTimeImmutable::createFromFormat('Y-m-d\TH:i:s.u', $createdAt, new DateTimeZone('UTC'))
         );
     }
 
@@ -129,10 +132,6 @@ final class MongoDBSnapshotStore implements SnapshotStore
             'bucketName' => $this->getGridFsName($aggregateType),
             'writeConcern' => $this->writeConcern,
         ]);
-
-        $createdAt = new UTCDateTime(
-            $snapshot->createdAt()->getTimestamp() * 1000 + (int) $snapshot->createdAt()->format('u')
-        );
 
         try {
             $bucket->delete($aggregateId);
@@ -148,7 +147,7 @@ final class MongoDBSnapshotStore implements SnapshotStore
                 'metadata' => [
                     'aggregate_type' => $aggregateType->toString(),
                     'last_version' => $snapshot->lastVersion(),
-                    'created_at' => $createdAt,
+                    'created_at' => $snapshot->createdAt()->format('Y-m-d\TH:i:s.u'),
                 ],
             ]
         );

@@ -12,6 +12,8 @@ declare(strict_types=1);
 
 namespace ProophTest\MongoDB\SnapshotStore;
 
+use DateTimeImmutable;
+use DateTimeZone;
 use MongoDB\Client;
 use MongoDB\Driver\ReadPreference;
 use MongoDB\Operation\Find;
@@ -19,6 +21,7 @@ use PHPUnit\Framework\TestCase;
 use Prooph\EventSourcing\Aggregate\AggregateType;
 use Prooph\EventSourcing\Snapshot\Snapshot;
 use Prooph\MongoDB\SnapshotStore\MongoDBSnapshotStore;
+use ProophTest\EventSourcing\Mock\User;
 
 class MongoDBSnapshotStoreTest extends TestCase
 {
@@ -37,16 +40,15 @@ class MongoDBSnapshotStoreTest extends TestCase
      */
     public function it_saves_and_reads()
     {
-        $aggregateType = AggregateType::fromString('baz');
-        $aggregateRoot = new \stdClass();
-        $aggregateRoot->foo = 'bar';
+        $aggregateRoot = User::nameNew('Sascha');
+        $aggregateType = AggregateType::fromAggregateRoot($aggregateRoot);
 
         $time = (string) microtime(true);
         if (false === strpos($time, '.')) {
             $time .= '.0000';
         }
 
-        $now = \DateTimeImmutable::createFromFormat('U.u', $time);
+        $now = DateTimeImmutable::createFromFormat('U.u', $time, new DateTimeZone('UTC'));
 
         $snapshot = new Snapshot($aggregateType, 'id', $aggregateRoot, 1, $now);
 
@@ -65,7 +67,7 @@ class MongoDBSnapshotStoreTest extends TestCase
         $operation = new Find(TestUtil::getDatabaseName(), 'snapshots.files', []);
         $cursor = $operation->execute($server);
 
-        $this->assertCount(1, $cursor);
+        $this->assertCount(1, $cursor->toArray());
     }
 
     /**
@@ -73,7 +75,7 @@ class MongoDBSnapshotStoreTest extends TestCase
      */
     public function it_uses_custom_snapshot_table_map()
     {
-        $aggregateType = AggregateType::fromString('foo');
+        $aggregateType = AggregateType::fromAggregateRootClass(\stdClass::class);
         $aggregateRoot = new \stdClass();
         $aggregateRoot->foo = 'bar';
         $time = (string) microtime(true);
@@ -102,7 +104,7 @@ class MongoDBSnapshotStoreTest extends TestCase
         $this->snapshotStore = new MongoDBSnapshotStore(
             $this->client,
             TestUtil::getDatabaseName(),
-            ['foo' => 'bar'],
+            [\stdClass::class => 'bar'],
             'snapshots'
         );
     }

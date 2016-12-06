@@ -55,7 +55,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "ProophTest\\MongoDB\\SnapshotStore\\": "tests/"
+            "ProophTest\\MongoDB\\SnapshotStore\\": "tests/",
+            "ProophTest\\EventSourcing\\": "vendor/prooph/event-sourcing/tests/"
         }
     },
     "extra": {
