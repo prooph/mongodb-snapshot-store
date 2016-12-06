@@ -93,18 +93,13 @@ final class MongoDBSnapshotStore implements SnapshotStore
             return null;
         }
 
-        try {
-            $metadata = $bucket->getFileDocumentForStream($stream);
-            $createdAt = $metadata->metadata->created_at;
-            $lastVersion = $metadata->metadata->last_version;
+        $metadata = $bucket->getFileDocumentForStream($stream);
+        $createdAt = $metadata->metadata->created_at;
+        $lastVersion = $metadata->metadata->last_version;
 
-            $destination = $this->createStream();
-            stream_copy_to_stream($stream, $destination);
-            $aggregateRoot = unserialize(stream_get_contents($destination, -1, 0));
-        } catch (\Throwable $e) {
-            // problem getting file from mongo or during unserialize
-            return null;
-        }
+        $destination = $this->createStream();
+        stream_copy_to_stream($stream, $destination);
+        $aggregateRoot = unserialize(stream_get_contents($destination, -1, 0));
 
         $aggregateTypeString = $aggregateType->toString();
 

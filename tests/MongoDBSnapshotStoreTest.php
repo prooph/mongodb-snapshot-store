@@ -97,6 +97,44 @@ class MongoDBSnapshotStoreTest extends TestCase
         $this->assertCount(1, $cursor->toArray());
     }
 
+    /**
+     * @test
+     */
+    public function it_ignores_invalid_aggregate_roots()
+    {
+        $aggregateType = AggregateType::fromAggregateRootClass(\stdClass::class);
+        $aggregateRoot = new \stdClass();
+        $aggregateRoot->foo = 'bar';
+        $time = (string) microtime(true);
+
+        if (false === strpos($time, '.')) {
+            $time .= '.0000';
+        }
+
+        $now = \DateTimeImmutable::createFromFormat('U.u', $time);
+
+        $snapshot = new Snapshot($aggregateType, 'id', $aggregateRoot, 1, $now);
+
+        $stream = fopen('php://temp', 'w+b');
+        fwrite($stream, '');
+        rewind($stream);
+
+        $bucket = $this->client->selectDatabase(TestUtil::getDatabaseName())->selectGridFSBucket([
+            'bucketName' => 'bar',
+        ]);
+
+        $bucket->uploadFromStream('id', $stream, [
+            '_id' => 'id',
+            'metadata' => [
+                'aggregate_type' => $aggregateType->toString(),
+                'last_version' => $snapshot->lastVersion(),
+                'created_at' => $snapshot->createdAt()->format('Y-m-d\TH:i:s.u'),
+            ],
+        ]);
+
+        $this->assertNull($this->snapshotStore->get($aggregateType, 'id'));
+    }
+
     protected function setUp(): void
     {
         $this->client = TestUtil::getClient();
