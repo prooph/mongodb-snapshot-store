@@ -20,18 +20,11 @@
         </whitelist>
     </filter>
 
-    <groups>
-      <exclude>
-        <group>pdo_pgsql</group>
-      </exclude>
-    </groups>
-
     <php>
-        <var name="db_type" value="pdo_mysql"/>
-        <var name="db_host" value="127.0.0.1" />
-        <var name="db_username" value="root" />
-        <var name="db_password" value="root" />
-        <var name="db_name" value="event_store_tests" />
-        <var name="db_port" value="3306"/>
+        <var name="mongo_host" value="127.0.0.1" />
+        <var name="mongo_username" value="" />
+        <var name="mongo_password" value="" />
+        <var name="mongo_dbname" value="event_store_tests" />
+        <var name="mongo_port" value="27017"/>
     </php>
 </phpunit>

@@ -23,16 +23,6 @@ matrix:
       env:
         - DEPENDENCIES="--prefer-lowest --prefer-stable"
         - SERVER_VERSION=3.2.11
-    - php: 7.1
-      env:
-        - DEPENDENCIES=""
-        - EXECUTE_CS_CHECK=true
-        - TEST_COVERAGE=true
-        - SERVER_VERSION=3.0.14
-    - php: 7.1
-      env:
-        - DEPENDENCIES="--prefer-lowest --prefer-stable"
-        - SERVER_VERSION=3.0.14
 
 cache:
   directories:
