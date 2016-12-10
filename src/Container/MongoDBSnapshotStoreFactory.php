@@ -96,12 +96,12 @@ class MongoDBSnapshotStoreFactory implements ProvidesDefaultOptions, RequiresCon
         $this->configId = $configId;
     }
 
-    public function dimensions(): array
+    public function dimensions(): iterable
     {
         return ['prooph', 'mongodb_snapshot_store'];
     }
 
-    public function defaultOptions(): array
+    public function defaultOptions(): iterable
     {
         return [
             'connection_options' => [
