@@ -26,7 +26,7 @@
     "prefer-stable": true,
     "require": {
         "php": "^7.1",
-        "prooph/event-sourcing" : "5.0.x-dev",
+        "prooph/snapshot-store" : "1.0.x-dev",
         "mongodb/mongodb": "^1.1.0"
     },
     "require-dev": {
@@ -50,13 +50,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Prooph\\MongoDB\\SnapshotStore\\": "src/"
+            "Prooph\\MongoDb\\SnapshotStore\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "ProophTest\\MongoDB\\SnapshotStore\\": "tests/",
-            "ProophTest\\EventSourcing\\": "vendor/prooph/event-sourcing/tests/"
+            "ProophTest\\MongoDb\\SnapshotStore\\": "tests/"
         }
     },
     "extra": {

@@ -1,8 +1,8 @@
 <?php
 /**
  * This file is part of the prooph/mongodb-snapshot-store.
- * (c) 2016-2016 prooph software GmbH <contact@prooph.de>
- * (c) 2016-2016 Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * (c) 2016-2017 prooph software GmbH <contact@prooph.de>
+ * (c) 2016-2017 Sascha-Oliver Prolic <saschaprolic@googlemail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace ProophTest\MongoDB\SnapshotStore;
+namespace ProophTest\MongoDb\SnapshotStore;
 
 use DateTimeImmutable;
 use DateTimeZone;
@@ -18,15 +18,13 @@ use MongoDB\Client;
 use MongoDB\Driver\ReadPreference;
 use MongoDB\Operation\Find;
 use PHPUnit\Framework\TestCase;
-use Prooph\EventSourcing\Aggregate\AggregateType;
-use Prooph\EventSourcing\Snapshot\Snapshot;
-use Prooph\MongoDB\SnapshotStore\MongoDBSnapshotStore;
-use ProophTest\EventSourcing\Mock\User;
+use Prooph\MongoDb\SnapshotStore\MongoDbSnapshotStore;
+use Prooph\SnapshotStore\Snapshot;
 
-class MongoDBSnapshotStoreTest extends TestCase
+class MongoDbSnapshotStoreTest extends TestCase
 {
     /**
-     * @var MongoDBSnapshotStore
+     * @var MongoDbSnapshotStore
      */
     private $snapshotStore;
 
@@ -40,8 +38,8 @@ class MongoDBSnapshotStoreTest extends TestCase
      */
     public function it_saves_and_reads()
     {
-        $aggregateRoot = User::nameNew('Sascha');
-        $aggregateType = AggregateType::fromAggregateRoot($aggregateRoot);
+        $aggregateRoot = ['name' => 'Sascha'];
+        $aggregateType = 'user';
 
         $time = (string) microtime(true);
         if (false === strpos($time, '.')) {
@@ -75,7 +73,7 @@ class MongoDBSnapshotStoreTest extends TestCase
      */
     public function it_uses_custom_snapshot_table_map()
     {
-        $aggregateType = AggregateType::fromAggregateRootClass(\stdClass::class);
+        $aggregateType = \stdClass::class;
         $aggregateRoot = new \stdClass();
         $aggregateRoot->foo = 'bar';
         $time = (string) microtime(true);
@@ -97,49 +95,11 @@ class MongoDBSnapshotStoreTest extends TestCase
         $this->assertCount(1, $cursor->toArray());
     }
 
-    /**
-     * @test
-     */
-    public function it_ignores_invalid_aggregate_roots()
-    {
-        $aggregateType = AggregateType::fromAggregateRootClass(\stdClass::class);
-        $aggregateRoot = new \stdClass();
-        $aggregateRoot->foo = 'bar';
-        $time = (string) microtime(true);
-
-        if (false === strpos($time, '.')) {
-            $time .= '.0000';
-        }
-
-        $now = \DateTimeImmutable::createFromFormat('U.u', $time);
-
-        $snapshot = new Snapshot($aggregateType, 'id', $aggregateRoot, 1, $now);
-
-        $stream = fopen('php://temp', 'w+b');
-        fwrite($stream, '');
-        rewind($stream);
-
-        $bucket = $this->client->selectDatabase(TestUtil::getDatabaseName())->selectGridFSBucket([
-            'bucketName' => 'bar',
-        ]);
-
-        $bucket->uploadFromStream('id', $stream, [
-            '_id' => 'id',
-            'metadata' => [
-                'aggregate_type' => $aggregateType->toString(),
-                'last_version' => $snapshot->lastVersion(),
-                'created_at' => $snapshot->createdAt()->format('Y-m-d\TH:i:s.u'),
-            ],
-        ]);
-
-        $this->assertNull($this->snapshotStore->get($aggregateType, 'id'));
-    }
-
     protected function setUp(): void
     {
         $this->client = TestUtil::getClient();
 
-        $this->snapshotStore = new MongoDBSnapshotStore(
+        $this->snapshotStore = new MongoDbSnapshotStore(
             $this->client,
             TestUtil::getDatabaseName(),
             [\stdClass::class => 'bar'],

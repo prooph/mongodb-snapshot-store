@@ -1,8 +1,8 @@
 <?php
 /**
  * This file is part of the prooph/mongodb-snapshot-store.
- * (c) 2016-2016 prooph software GmbH <contact@prooph.de>
- * (c) 2016-2016 Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * (c) 2016-2017 prooph software GmbH <contact@prooph.de>
+ * (c) 2016-2017 Sascha-Oliver Prolic <saschaprolic@googlemail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace Prooph\MongoDB\SnapshotStore\Container;
+namespace Prooph\MongoDb\SnapshotStore\Container;
 
 use Interop\Config\ConfigurationTrait;
 use Interop\Config\ProvidesDefaultOptions;
@@ -19,9 +19,9 @@ use Interop\Container\ContainerInterface;
 use MongoDB\Client;
 use MongoDB\Driver\ReadConcern;
 use MongoDB\Driver\WriteConcern;
-use Prooph\MongoDB\SnapshotStore\MongoDBSnapshotStore;
+use Prooph\MongoDb\SnapshotStore\MongoDbSnapshotStore;
 
-class MongoDBSnapshotStoreFactory implements ProvidesDefaultOptions, RequiresConfigId
+class MongoDbSnapshotStoreFactory implements ProvidesDefaultOptions, RequiresConfigId
 {
     use ConfigurationTrait;
 
@@ -39,13 +39,13 @@ class MongoDBSnapshotStoreFactory implements ProvidesDefaultOptions, RequiresCon
      * <code>
      * <?php
      * return [
-     *     MongoDBSnapshotStore::class => [MongoDBSnapshotStoreFactory::class, 'service_name'],
+     *     MongoDbSnapshotStore::class => [MongoDbSnapshotStoreFactory::class, 'service_name'],
      * ];
      * </code>
      *
      * @throws \InvalidArgumentException
      */
-    public static function __callStatic(string $name, array $arguments): MongoDBSnapshotStore
+    public static function __callStatic(string $name, array $arguments): MongoDbSnapshotStore
     {
         if (! isset($arguments[0]) || ! $arguments[0] instanceof ContainerInterface) {
             throw new \InvalidArgumentException(
@@ -56,7 +56,7 @@ class MongoDBSnapshotStoreFactory implements ProvidesDefaultOptions, RequiresCon
         return (new static($name))->__invoke($arguments[0]);
     }
 
-    public function __invoke(ContainerInterface $container): MongoDBSnapshotStore
+    public function __invoke(ContainerInterface $container): MongoDbSnapshotStore
     {
         $config = $container->get('config');
         $config = $this->options($config, $this->configId);
@@ -81,7 +81,7 @@ class MongoDBSnapshotStoreFactory implements ProvidesDefaultOptions, RequiresCon
             $config['write_concern']['journal']
         );
 
-        return new MongoDBSnapshotStore(
+        return new MongoDbSnapshotStore(
             $client,
             $config['connection_options']['dbname'],
             $config['snapshot_grid_fs_map'],
