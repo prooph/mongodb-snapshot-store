@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace ProophTest\MongoDB\SnapshotStore;
+namespace ProophTest\MongoDb\SnapshotStore;
 
 use MongoDB\Client;
 

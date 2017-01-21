@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace Prooph\MongoDB\SnapshotStore;
+namespace Prooph\MongoDb\SnapshotStore;
 
 use DateTimeImmutable;
 use DateTimeZone;
@@ -18,11 +18,10 @@ use MongoDB\Client;
 use MongoDB\Driver\ReadConcern;
 use MongoDB\Driver\WriteConcern;
 use MongoDB\GridFS\Exception\FileNotFoundException;
-use Prooph\EventSourcing\Aggregate\AggregateType;
-use Prooph\EventSourcing\Snapshot\Snapshot;
-use Prooph\EventSourcing\Snapshot\SnapshotStore;
+use Prooph\SnapshotStore\Snapshot;
+use Prooph\SnapshotStore\SnapshotStore;
 
-final class MongoDBSnapshotStore implements SnapshotStore
+final class MongoDbSnapshotStore implements SnapshotStore
 {
     /**
      * @var Client
@@ -80,7 +79,7 @@ final class MongoDBSnapshotStore implements SnapshotStore
         $this->writeConcern = $writeConcern;
     }
 
-    public function get(AggregateType $aggregateType, string $aggregateId): ?Snapshot
+    public function get(string $aggregateType, string $aggregateId): ?Snapshot
     {
         $bucket = $this->client->selectDatabase($this->dbName)->selectGridFSBucket([
             'bucketName' => $this->getGridFsName($aggregateType),
@@ -100,13 +99,6 @@ final class MongoDBSnapshotStore implements SnapshotStore
         $destination = $this->createStream();
         stream_copy_to_stream($stream, $destination);
         $aggregateRoot = unserialize(stream_get_contents($destination, -1, 0));
-
-        $aggregateTypeString = $aggregateType->toString();
-
-        if (! $aggregateRoot instanceof $aggregateTypeString) {
-            // invalid instance returned
-            return null;
-        }
 
         return new Snapshot(
             $aggregateType,
@@ -139,7 +131,7 @@ final class MongoDBSnapshotStore implements SnapshotStore
             [
                 '_id' => $aggregateId,
                 'metadata' => [
-                    'aggregate_type' => $aggregateType->toString(),
+                    'aggregate_type' => $aggregateType,
                     'last_version' => $snapshot->lastVersion(),
                     'created_at' => $snapshot->createdAt()->format('Y-m-d\TH:i:s.u'),
                 ],
@@ -147,10 +139,10 @@ final class MongoDBSnapshotStore implements SnapshotStore
         );
     }
 
-    private function getGridFsName(AggregateType $aggregateType): string
+    private function getGridFsName(string $aggregateType): string
     {
-        if (isset($this->snapshotGridFsMap[$aggregateType->toString()])) {
-            $gridFsName = $this->snapshotGridFsMap[$aggregateType->toString()];
+        if (isset($this->snapshotGridFsMap[$aggregateType])) {
+            $gridFsName = $this->snapshotGridFsMap[$aggregateType];
         } else {
             $gridFsName = $this->defaultSnapshotGridFsName;
         }

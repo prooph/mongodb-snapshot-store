@@ -10,15 +10,15 @@
 
 declare(strict_types=1);
 
-namespace ProophTest\MongoDB\SnapshotStore\Container;
+namespace ProophTest\MongoDb\SnapshotStore\Container;
 
 use Interop\Container\ContainerInterface;
 use PHPUnit\Framework\TestCase;
-use Prooph\MongoDB\SnapshotStore\Container\MongoDBSnapshotStoreFactory;
-use Prooph\MongoDB\SnapshotStore\MongoDBSnapshotStore;
-use ProophTest\MongoDB\SnapshotStore\TestUtil;
+use Prooph\MongoDb\SnapshotStore\Container\MongoDbSnapshotStoreFactory;
+use Prooph\MongoDb\SnapshotStore\MongoDbSnapshotStore;
+use ProophTest\MongoDb\SnapshotStore\TestUtil;
 
-class MongoDBSnapshotStoreFactoryTest extends TestCase
+class MongoDbSnapshotStoreFactoryTest extends TestCase
 {
     /**
      * @test
@@ -36,10 +36,10 @@ class MongoDBSnapshotStoreFactoryTest extends TestCase
         $container->get('my_connection')->willReturn($client)->shouldBeCalled();
         $container->get('config')->willReturn($config)->shouldBeCalled();
 
-        $factory = new MongoDBSnapshotStoreFactory();
+        $factory = new MongoDbSnapshotStoreFactory();
         $snapshotStore = $factory($container->reveal());
 
-        $this->assertInstanceOf(MongoDBSnapshotStore::class, $snapshotStore);
+        $this->assertInstanceOf(MongoDbSnapshotStore::class, $snapshotStore);
     }
 
     /**
@@ -56,9 +56,9 @@ class MongoDBSnapshotStoreFactoryTest extends TestCase
         $container->get('config')->willReturn($config)->shouldBeCalled();
 
         $snapshotStoreName = 'custom';
-        $snapshotStore = MongoDBSnapshotStoreFactory::$snapshotStoreName($container->reveal());
+        $snapshotStore = MongoDbSnapshotStoreFactory::$snapshotStoreName($container->reveal());
 
-        $this->assertInstanceOf(MongoDBSnapshotStore::class, $snapshotStore);
+        $this->assertInstanceOf(MongoDbSnapshotStore::class, $snapshotStore);
     }
 
     /**
@@ -69,6 +69,6 @@ class MongoDBSnapshotStoreFactoryTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
 
         $eventStoreName = 'custom';
-        MongoDBSnapshotStoreFactory::$eventStoreName('invalid container');
+        MongoDbSnapshotStoreFactory::$eventStoreName('invalid container');
     }
 }
