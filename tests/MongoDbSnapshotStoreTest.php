@@ -18,8 +18,8 @@ use MongoDB\Client;
 use MongoDB\Driver\ReadPreference;
 use MongoDB\Operation\Find;
 use PHPUnit\Framework\TestCase;
-use Prooph\SnapshotStore\Snapshot;
 use Prooph\MongoDb\SnapshotStore\MongoDbSnapshotStore;
+use Prooph\SnapshotStore\Snapshot;
 
 class MongoDbSnapshotStoreTest extends TestCase
 {
