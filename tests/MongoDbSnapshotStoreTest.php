@@ -71,6 +71,34 @@ class MongoDbSnapshotStoreTest extends TestCase
     /**
      * @test
      */
+    public function it_saves_multiple_snapshots()
+    {
+        $aggregateRoot = ['name' => 'Sascha'];
+        $aggregateType = 'user';
+
+        $time = (string) microtime(true);
+        if (false === strpos($time, '.')) {
+            $time .= '.0000';
+        }
+
+        $now = DateTimeImmutable::createFromFormat('U.u', $time, new DateTimeZone('UTC'));
+
+        $snapshot1 = new Snapshot($aggregateType, 'id1', $aggregateRoot, 1, $now);
+
+        $snapshot2 = new Snapshot($aggregateType, 'id2', $aggregateRoot, 2, $now);
+
+        $this->snapshotStore->save($snapshot1, $snapshot2);
+
+        $readSnapshot = $this->snapshotStore->get($aggregateType, 'id1');
+        $this->assertEquals($snapshot1, $readSnapshot);
+
+        $readSnapshot = $this->snapshotStore->get($aggregateType, 'id2');
+        $this->assertEquals($snapshot2, $readSnapshot);
+    }
+
+    /**
+     * @test
+     */
     public function it_uses_custom_snapshot_table_map()
     {
         $aggregateType = \stdClass::class;
