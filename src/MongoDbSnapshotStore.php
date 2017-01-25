@@ -109,34 +109,37 @@ final class MongoDbSnapshotStore implements SnapshotStore
         );
     }
 
-    public function save(Snapshot $snapshot): void
+    public function save(Snapshot ...$snapshots): void
     {
-        $aggregateId = $snapshot->aggregateId();
-        $aggregateType = $snapshot->aggregateType();
+        // unfortunately there is no easy way to mass-upload without a loop
+        foreach ($snapshots as $snapshot) {
+            $aggregateId = $snapshot->aggregateId();
+            $aggregateType = $snapshot->aggregateType();
 
-        $bucket = $this->client->selectDatabase($this->dbName)->selectGridFSBucket([
-            'bucketName' => $this->getGridFsName($aggregateType),
-            'writeConcern' => $this->writeConcern,
-        ]);
+            $bucket = $this->client->selectDatabase($this->dbName)->selectGridFSBucket([
+                'bucketName' => $this->getGridFsName($aggregateType),
+                'writeConcern' => $this->writeConcern,
+            ]);
 
-        try {
-            $bucket->delete($aggregateId);
-        } catch (\Throwable $e) {
-            // ignore
+            try {
+                $bucket->delete($aggregateId);
+            } catch (\Throwable $e) {
+                // ignore
+            }
+
+            $bucket->uploadFromStream(
+                $aggregateId,
+                $this->createStream(serialize($snapshot->aggregateRoot())),
+                [
+                    '_id' => $aggregateId,
+                    'metadata' => [
+                        'aggregate_type' => $aggregateType,
+                        'last_version' => $snapshot->lastVersion(),
+                        'created_at' => $snapshot->createdAt()->format('Y-m-d\TH:i:s.u'),
+                    ],
+                ]
+            );
         }
-
-        $bucket->uploadFromStream(
-            $aggregateId,
-            $this->createStream(serialize($snapshot->aggregateRoot())),
-            [
-                '_id' => $aggregateId,
-                'metadata' => [
-                    'aggregate_type' => $aggregateType,
-                    'last_version' => $snapshot->lastVersion(),
-                    'created_at' => $snapshot->createdAt()->format('Y-m-d\TH:i:s.u'),
-                ],
-            ]
-        );
     }
 
     private function getGridFsName(string $aggregateType): string
