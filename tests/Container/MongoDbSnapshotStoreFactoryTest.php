@@ -12,11 +12,11 @@ declare(strict_types=1);
 
 namespace ProophTest\MongoDb\SnapshotStore\Container;
 
-use Interop\Container\ContainerInterface;
 use PHPUnit\Framework\TestCase;
 use Prooph\MongoDb\SnapshotStore\Container\MongoDbSnapshotStoreFactory;
 use Prooph\MongoDb\SnapshotStore\MongoDbSnapshotStore;
 use ProophTest\MongoDb\SnapshotStore\TestUtil;
+use Psr\Container\ContainerInterface;
 
 class MongoDbSnapshotStoreFactoryTest extends TestCase
 {

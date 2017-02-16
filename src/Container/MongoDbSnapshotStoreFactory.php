@@ -15,11 +15,11 @@ namespace Prooph\MongoDb\SnapshotStore\Container;
 use Interop\Config\ConfigurationTrait;
 use Interop\Config\ProvidesDefaultOptions;
 use Interop\Config\RequiresConfigId;
-use Interop\Container\ContainerInterface;
 use MongoDB\Client;
 use MongoDB\Driver\ReadConcern;
 use MongoDB\Driver\WriteConcern;
 use Prooph\MongoDb\SnapshotStore\MongoDbSnapshotStore;
+use Psr\Container\ContainerInterface;
 
 class MongoDbSnapshotStoreFactory implements ProvidesDefaultOptions, RequiresConfigId
 {
