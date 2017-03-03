@@ -15,7 +15,7 @@ You can install prooph/mongodb-snapshot-store via composer by adding `"prooph/mo
 ## Requirements
 
 - PHP 7.1
-- MongoDB >= 3.2
+- MongoDB >= 3.4
 - PHP MongoDB Extension
 
 ## Support

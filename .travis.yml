@@ -8,21 +8,11 @@ matrix:
         - DEPENDENCIES=""
         - EXECUTE_CS_CHECK=true
         - TEST_COVERAGE=true
-        - SERVER_VERSION=3.4.0
+        - SERVER_VERSION=3.4.2
     - php: 7.1
       env:
         - DEPENDENCIES="--prefer-lowest --prefer-stable"
-        - SERVER_VERSION=3.4.0
-    - php: 7.1
-      env:
-        - DEPENDENCIES=""
-        - EXECUTE_CS_CHECK=true
-        - TEST_COVERAGE=true
-        - SERVER_VERSION=3.2.11
-    - php: 7.1
-      env:
-        - DEPENDENCIES="--prefer-lowest --prefer-stable"
-        - SERVER_VERSION=3.2.11
+        - SERVER_VERSION=3.4.2
 
 cache:
   directories:

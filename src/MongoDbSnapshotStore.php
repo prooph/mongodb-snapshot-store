@@ -161,6 +161,7 @@ final class MongoDbSnapshotStore implements SnapshotStore
         $bucket = $this->client->selectDatabase($this->dbName)->selectGridFSBucket([
             'bucketName' => $this->getGridFsName($aggregateType),
             'readConcern' => $this->readConcern,
+            'writeConcern' => $this->writeConcern,
         ]);
 
         $snapshots = $bucket->find([
