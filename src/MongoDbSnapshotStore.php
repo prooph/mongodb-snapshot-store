@@ -142,15 +142,44 @@ final class MongoDbSnapshotStore implements SnapshotStore
         }
     }
 
+    public function removeAll(string $aggregateType): void
+    {
+        $gridFsName = $this->getGridFsName($aggregateType);
+
+        if ($gridFsName !== $this->defaultSnapshotGridFsName) {
+            // it's faster to just drop the entire collection
+            $this->client->selectCollection($this->dbName, sprintf('%s.files', $gridFsName))->drop([
+                'writeConcern' => $this->writeConcern,
+            ]);
+            $this->client->selectCollection($this->dbName, sprintf('%s.chunks', $gridFsName))->drop([
+                'writeConcern' => $this->writeConcern,
+            ]);
+
+            return;
+        }
+
+        $bucket = $this->client->selectDatabase($this->dbName)->selectGridFSBucket([
+            'bucketName' => $this->getGridFsName($aggregateType),
+            'readConcern' => $this->readConcern,
+            'writeConcern' => $this->writeConcern,
+        ]);
+
+        $snapshots = $bucket->find([
+            'metadata.aggregate_type' => $aggregateType,
+        ]);
+
+        foreach ($snapshots as $snapshot) {
+            $bucket->delete($snapshot->_id);
+        }
+    }
+
     private function getGridFsName(string $aggregateType): string
     {
         if (isset($this->snapshotGridFsMap[$aggregateType])) {
-            $gridFsName = $this->snapshotGridFsMap[$aggregateType];
-        } else {
-            $gridFsName = $this->defaultSnapshotGridFsName;
+            return $gridFsName = $this->snapshotGridFsMap[$aggregateType];
         }
 
-        return $gridFsName;
+        return $this->defaultSnapshotGridFsName;
     }
 
     /**
