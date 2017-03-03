@@ -144,6 +144,20 @@ final class MongoDbSnapshotStore implements SnapshotStore
 
     public function removeAll(string $aggregateType): void
     {
+        $gridFsName = $this->getGridFsName($aggregateType);
+
+        if ($gridFsName !== $this->defaultSnapshotGridFsName) {
+            // it's faster to just drop the entire collection
+            $this->client->selectCollection($this->dbName, sprintf('%s.files', $gridFsName))->drop([
+                'writeConcern' => $this->writeConcern,
+            ]);
+            $this->client->selectCollection($this->dbName, sprintf('%s.chunks', $gridFsName))->drop([
+                'writeConcern' => $this->writeConcern,
+            ]);
+
+            return;
+        }
+
         $bucket = $this->client->selectDatabase($this->dbName)->selectGridFSBucket([
             'bucketName' => $this->getGridFsName($aggregateType),
             'readConcern' => $this->readConcern,

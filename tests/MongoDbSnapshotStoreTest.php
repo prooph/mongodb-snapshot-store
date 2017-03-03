@@ -87,9 +87,11 @@ class MongoDbSnapshotStoreTest extends TestCase
 
         $snapshot2 = new Snapshot($aggregateType, 'id2', $aggregateRoot, 2, $now);
 
-        $snapshot3 = new Snapshot('blog', 'id3', $aggregateRoot, 1, $now);
+        $snapshot3 = new Snapshot('bar', 'id3', $aggregateRoot, 1, $now);
 
-        $this->snapshotStore->save($snapshot1, $snapshot2, $snapshot3);
+        $snapshot4 = new Snapshot(\stdClass::class, 'id4', $aggregateRoot, 1, $now);
+
+        $this->snapshotStore->save($snapshot1, $snapshot2, $snapshot3, $snapshot4);
 
         $readSnapshot = $this->snapshotStore->get($aggregateType, 'id1');
         $this->assertEquals($snapshot1, $readSnapshot);
@@ -97,13 +99,23 @@ class MongoDbSnapshotStoreTest extends TestCase
         $readSnapshot = $this->snapshotStore->get($aggregateType, 'id2');
         $this->assertEquals($snapshot2, $readSnapshot);
 
+        $readSnapshot = $this->snapshotStore->get('bar', 'id3');
+        $this->assertEquals($snapshot3, $readSnapshot);
+
+        $readSnapshot = $this->snapshotStore->get(\stdClass::class, 'id4');
+        $this->assertEquals($snapshot4, $readSnapshot);
+
         $this->snapshotStore->removeAll($aggregateType);
 
         $this->assertNull($this->snapshotStore->get($aggregateType, 'id1'));
         $this->assertNull($this->snapshotStore->get($aggregateType, 'id2'));
 
-        $readSnapshot = $this->snapshotStore->get('blog', 'id3');
+        $readSnapshot = $this->snapshotStore->get('bar', 'id3');
         $this->assertEquals($snapshot3, $readSnapshot);
+
+        $this->snapshotStore->removeAll(\stdClass::class);
+
+        $this->assertNull($this->snapshotStore->get(\stdClass::class, 'id4'));
     }
 
     /**
