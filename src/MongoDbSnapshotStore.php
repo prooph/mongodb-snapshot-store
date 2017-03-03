@@ -142,15 +142,29 @@ final class MongoDbSnapshotStore implements SnapshotStore
         }
     }
 
+    public function removeAll(string $aggregateType): void
+    {
+        $bucket = $this->client->selectDatabase($this->dbName)->selectGridFSBucket([
+            'bucketName' => $this->getGridFsName($aggregateType),
+            'readConcern' => $this->readConcern,
+        ]);
+
+        $snapshots = $bucket->find([
+            'metadata.aggregate_type' => $aggregateType,
+        ]);
+
+        foreach ($snapshots as $snapshot) {
+            $bucket->delete($snapshot->_id);
+        }
+    }
+
     private function getGridFsName(string $aggregateType): string
     {
         if (isset($this->snapshotGridFsMap[$aggregateType])) {
-            $gridFsName = $this->snapshotGridFsMap[$aggregateType];
-        } else {
-            $gridFsName = $this->defaultSnapshotGridFsName;
+            return $gridFsName = $this->snapshotGridFsMap[$aggregateType];
         }
 
-        return $gridFsName;
+        return $this->defaultSnapshotGridFsName;
     }
 
     /**

@@ -71,7 +71,7 @@ class MongoDbSnapshotStoreTest extends TestCase
     /**
      * @test
      */
-    public function it_saves_multiple_snapshots()
+    public function it_saves_multiple_snapshots_and_removes_them()
     {
         $aggregateRoot = ['name' => 'Sascha'];
         $aggregateType = 'user';
@@ -87,13 +87,23 @@ class MongoDbSnapshotStoreTest extends TestCase
 
         $snapshot2 = new Snapshot($aggregateType, 'id2', $aggregateRoot, 2, $now);
 
-        $this->snapshotStore->save($snapshot1, $snapshot2);
+        $snapshot3 = new Snapshot('blog', 'id3', $aggregateRoot, 1, $now);
+
+        $this->snapshotStore->save($snapshot1, $snapshot2, $snapshot3);
 
         $readSnapshot = $this->snapshotStore->get($aggregateType, 'id1');
         $this->assertEquals($snapshot1, $readSnapshot);
 
         $readSnapshot = $this->snapshotStore->get($aggregateType, 'id2');
         $this->assertEquals($snapshot2, $readSnapshot);
+
+        $this->snapshotStore->removeAll($aggregateType);
+
+        $this->assertNull($this->snapshotStore->get($aggregateType, 'id1'));
+        $this->assertNull($this->snapshotStore->get($aggregateType, 'id2'));
+
+        $readSnapshot = $this->snapshotStore->get('blog', 'id3');
+        $this->assertEquals($snapshot3, $readSnapshot);
     }
 
     /**
