@@ -32,8 +32,8 @@
     "require-dev": {
         "psr/container": "^1.0",
         "sandrokeil/interop-config": "^2.0.1",
-        "phpunit/phpunit": "^5.7",
-        "phpspec/prophecy": "dev-patch-1 as 1.6.2",
+        "phpunit/phpunit": "^6.0",
+        "phpspec/prophecy": "^1.7",
         "prooph/php-cs-fixer-config": "^0.1.1",
         "satooshi/php-coveralls": "^1.0",
         "zendframework/zend-servicemanager": "^3.1",
@@ -71,11 +71,5 @@
         "cs": "php-cs-fixer fix -v --diff --dry-run",
         "cs-fix": "php-cs-fixer fix -v --diff",
         "test": "phpunit"
-    },
-    "repositories": [
-        {
-            "type": "git",
-            "url": "https://github.com/prolic/prophecy.git"
-        }
-    ]
+    }
 }
