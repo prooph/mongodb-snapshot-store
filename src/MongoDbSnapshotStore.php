@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace Prooph\MongoDb\SnapshotStore;
+namespace Prooph\SnapshotStore\MongoDb;
 
 use DateTimeImmutable;
 use DateTimeZone;
