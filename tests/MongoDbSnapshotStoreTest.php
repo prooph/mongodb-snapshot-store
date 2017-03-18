@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace ProophTest\MongoDb\SnapshotStore;
+namespace ProophTest\SnapshotStore\MongoDb;
 
 use DateTimeImmutable;
 use DateTimeZone;
@@ -18,7 +18,7 @@ use MongoDB\Client;
 use MongoDB\Driver\ReadPreference;
 use MongoDB\Operation\Find;
 use PHPUnit\Framework\TestCase;
-use Prooph\MongoDb\SnapshotStore\MongoDbSnapshotStore;
+use Prooph\SnapshotStore\MongoDb\MongoDbSnapshotStore;
 use Prooph\SnapshotStore\Snapshot;
 
 class MongoDbSnapshotStoreTest extends TestCase

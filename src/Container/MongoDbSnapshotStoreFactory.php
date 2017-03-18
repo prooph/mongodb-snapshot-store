@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace Prooph\MongoDb\SnapshotStore\Container;
+namespace Prooph\SnapshotStore\MongoDb\Container;
 
 use Interop\Config\ConfigurationTrait;
 use Interop\Config\ProvidesDefaultOptions;
@@ -18,7 +18,7 @@ use Interop\Config\RequiresConfigId;
 use MongoDB\Client;
 use MongoDB\Driver\ReadConcern;
 use MongoDB\Driver\WriteConcern;
-use Prooph\MongoDb\SnapshotStore\MongoDbSnapshotStore;
+use Prooph\SnapshotStore\MongoDb\MongoDbSnapshotStore;
 use Psr\Container\ContainerInterface;
 
 class MongoDbSnapshotStoreFactory implements ProvidesDefaultOptions, RequiresConfigId

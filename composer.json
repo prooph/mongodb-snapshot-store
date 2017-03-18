@@ -50,12 +50,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Prooph\\MongoDb\\SnapshotStore\\": "src/"
+            "Prooph\\SnapshotStore\\MongoDb\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "ProophTest\\MongoDb\\SnapshotStore\\": "tests/"
+            "ProophTest\\SnapshotStore\\MongoDb\\": "tests/"
         }
     },
     "extra": {
