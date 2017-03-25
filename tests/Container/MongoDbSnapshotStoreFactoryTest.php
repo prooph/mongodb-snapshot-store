@@ -45,25 +45,6 @@ class MongoDbSnapshotStoreFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_creates_adapter_via_connection_options(): void
-    {
-        $config['prooph']['mongodb_snapshot_store']['custom'] = [
-            'connection_options' => TestUtil::getConnectionParams(),
-        ];
-
-        $container = $this->prophesize(ContainerInterface::class);
-
-        $container->get('config')->willReturn($config)->shouldBeCalled();
-
-        $snapshotStoreName = 'custom';
-        $snapshotStore = MongoDbSnapshotStoreFactory::$snapshotStoreName($container->reveal());
-
-        $this->assertInstanceOf(MongoDbSnapshotStore::class, $snapshotStore);
-    }
-
-    /**
-     * @test
-     */
     public function it_throws_exception_when_invalid_container_given(): void
     {
         $this->expectException(\InvalidArgumentException::class);

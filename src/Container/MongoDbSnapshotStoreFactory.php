@@ -15,13 +15,13 @@ namespace Prooph\SnapshotStore\MongoDb\Container;
 use Interop\Config\ConfigurationTrait;
 use Interop\Config\ProvidesDefaultOptions;
 use Interop\Config\RequiresConfigId;
-use MongoDB\Client;
+use Interop\Config\RequiresMandatoryOptions;
 use MongoDB\Driver\ReadConcern;
 use MongoDB\Driver\WriteConcern;
 use Prooph\SnapshotStore\MongoDb\MongoDbSnapshotStore;
 use Psr\Container\ContainerInterface;
 
-class MongoDbSnapshotStoreFactory implements ProvidesDefaultOptions, RequiresConfigId
+class MongoDbSnapshotStoreFactory implements ProvidesDefaultOptions, RequiresConfigId, RequiresMandatoryOptions
 {
     use ConfigurationTrait;
 
@@ -61,17 +61,7 @@ class MongoDbSnapshotStoreFactory implements ProvidesDefaultOptions, RequiresCon
         $config = $container->get('config');
         $config = $this->options($config, $this->configId);
 
-        if (isset($config['mongo_client_service'])) {
-            $client = $container->get($config['mongo_client_service']);
-        } else {
-            $authString = isset($config['connection_options']['user'])
-                ? $config['connection_options']['user'] . ':' . $config['connection_options']['password'] . '@'
-                : '';
-
-            $uri = 'mongodb://' . $authString . $config['connection_options']['host'] .'/';
-
-            $client = new Client($uri);
-        }
+        $client = $container->get($config['mongo_client_service']);
 
         $readConcern = new ReadConcern($config['read_concern']);
 
@@ -104,13 +94,6 @@ class MongoDbSnapshotStoreFactory implements ProvidesDefaultOptions, RequiresCon
     public function defaultOptions(): iterable
     {
         return [
-            'connection_options' => [
-                'user' => '',
-                'password' => '',
-                'host' => '127.0.0.1',
-                'dbname' => 'snapshot_store',
-                'port' => 27017,
-            ],
             'snapshot_grid_fs_map' => [],
             'default_snapshot_grid_fs_name' => 'snapshots',
             'read_concern' => 'local', // other value: majority
@@ -119,6 +102,13 @@ class MongoDbSnapshotStoreFactory implements ProvidesDefaultOptions, RequiresCon
                 'wtimeout' => 0, // How long to wait (in milliseconds) for secondaries before failing.
                 'journal' => false, // Wait until mongod has applied the write to the journal.
             ],
+        ];
+    }
+
+    public function mandatoryOptions(): iterable
+    {
+        return [
+            'mongo_client_service',
         ];
     }
 }
