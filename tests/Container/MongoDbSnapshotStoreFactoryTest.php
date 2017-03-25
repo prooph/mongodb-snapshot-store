@@ -27,6 +27,7 @@ class MongoDbSnapshotStoreFactoryTest extends TestCase
     {
         $config['prooph']['mongodb_snapshot_store']['default'] = [
             'mongo_client_service' => 'my_connection',
+            'db_name' => 'foo',
         ];
 
         $client = TestUtil::getClient();

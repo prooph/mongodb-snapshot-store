@@ -26,6 +26,7 @@ Sample configuration:
         'mongodb_snapshot_store' => [
             'default' => [
                 'mongo_client_service' => 'my_mongo_connection', //<-- service name of your mongo client
+                'db_name' => 'test_db', //<-- database name
                 'default_snapshot_grid_fs_name' => 'snapshots', //<-- grid fs name of your snapshots, defaults to `snapshots`
                 'snapshot_grid_fs_map' => [ //<-- Array with key = aggregate type, value = snapshot grid fs name, defaults to empty array
                     'My\AggregateOne' => 'one_snapshots',

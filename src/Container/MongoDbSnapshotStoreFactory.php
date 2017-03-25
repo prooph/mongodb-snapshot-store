@@ -73,7 +73,7 @@ class MongoDbSnapshotStoreFactory implements ProvidesDefaultOptions, RequiresCon
 
         return new MongoDbSnapshotStore(
             $client,
-            $config['connection_options']['dbname'],
+            $config['db_name'],
             $config['snapshot_grid_fs_map'],
             $config['default_snapshot_grid_fs_name'],
             $readConcern,
@@ -109,6 +109,7 @@ class MongoDbSnapshotStoreFactory implements ProvidesDefaultOptions, RequiresCon
     {
         return [
             'mongo_client_service',
+            'db_name',
         ];
     }
 }
