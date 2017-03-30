@@ -26,7 +26,7 @@
     "prefer-stable": true,
     "require": {
         "php": "^7.1",
-        "prooph/snapshot-store" : "1.0.x-dev",
+        "prooph/snapshot-store" : "^1.0",
         "mongodb/mongodb": "^1.1.0"
     },
     "require-dev": {
@@ -37,7 +37,6 @@
         "prooph/php-cs-fixer-config": "^0.1.1",
         "prooph/bookdown-template": "^0.2.3",
         "satooshi/php-coveralls": "^1.0",
-        "zendframework/zend-servicemanager": "^3.1",
         "malukenho/docheader": "^0.1.4"
     },
     "suggest" : {
@@ -61,7 +60,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "1.0-dev"
+            "dev-master": "1.1-dev"
         }
     },
     "scripts": {
