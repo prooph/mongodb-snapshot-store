@@ -38,6 +38,7 @@ Sample configuration:
                     'wtimeout' => 0, // How long to wait (in milliseconds) for secondaries before failing.
                     'journal' => false, // Wait until mongod has applied the write to the journal.
                 ],
+                'serializer' => 'My\Serializer' //<-- optional, service name of a custom serializer
             ],
         ],
     ],
