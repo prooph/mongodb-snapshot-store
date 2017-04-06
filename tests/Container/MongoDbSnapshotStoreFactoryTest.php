@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace ProophTest\SnapshotStore\MongoDb\Container;
 
 use PHPUnit\Framework\TestCase;
+use Prooph\SnapshotStore\CallbackSerializer;
 use Prooph\SnapshotStore\MongoDb\Container\MongoDbSnapshotStoreFactory;
 use Prooph\SnapshotStore\MongoDb\MongoDbSnapshotStore;
 use ProophTest\SnapshotStore\MongoDb\TestUtil;
@@ -52,5 +53,30 @@ class MongoDbSnapshotStoreFactoryTest extends TestCase
 
         $eventStoreName = 'custom';
         MongoDbSnapshotStoreFactory::$eventStoreName('invalid container');
+    }
+
+    /**
+     * @test
+     */
+    public function it_gets_serializer_from_container_when_not_instanceof_serializer(): void
+    {
+        $config['prooph']['mongodb_snapshot_store']['default'] = [
+            'mongo_client_service' => 'my_connection',
+            'db_name' => 'foo',
+            'serializer' => 'serializer_servicename',
+        ];
+
+        $client = TestUtil::getClient();
+
+        $container = $this->prophesize(ContainerInterface::class);
+
+        $container->get('my_connection')->willReturn($client)->shouldBeCalled();
+        $container->get('config')->willReturn($config)->shouldBeCalled();
+        $container->get('serializer_servicename')->willReturn(new CallbackSerializer(function() {}, function() {}))->shouldBeCalled();
+
+        $factory = new MongoDbSnapshotStoreFactory();
+        $snapshotStore = $factory($container->reveal());
+
+        $this->assertInstanceOf(MongoDbSnapshotStore::class, $snapshotStore);
     }
 }
