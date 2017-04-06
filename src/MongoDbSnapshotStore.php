@@ -18,6 +18,8 @@ use MongoDB\Client;
 use MongoDB\Driver\ReadConcern;
 use MongoDB\Driver\WriteConcern;
 use MongoDB\GridFS\Exception\FileNotFoundException;
+use Prooph\SnapshotStore\CallbackSerializer;
+use Prooph\SnapshotStore\Serializer;
 use Prooph\SnapshotStore\Snapshot;
 use Prooph\SnapshotStore\SnapshotStore;
 
@@ -55,13 +57,19 @@ final class MongoDbSnapshotStore implements SnapshotStore
      */
     private $writeConcern;
 
+    /**
+     * @var Serializer
+     */
+    private $serializer;
+
     public function __construct(
         Client $client,
         string $dbName,
         array $snapshotGridFsMap = [],
         string $defaultSnapshotGridFsName = 'snapshots',
         ReadConcern $readConcern = null,
-        WriteConcern $writeConcern = null
+        WriteConcern $writeConcern = null,
+        Serializer $serializer = null
     ) {
         if (null === $readConcern) {
             $readConcern = new ReadConcern(ReadConcern::LOCAL);
@@ -77,6 +85,7 @@ final class MongoDbSnapshotStore implements SnapshotStore
         $this->defaultSnapshotGridFsName = $defaultSnapshotGridFsName;
         $this->readConcern = $readConcern;
         $this->writeConcern = $writeConcern;
+        $this->serializer = $serializer ?: new CallbackSerializer(null, null);
     }
 
     public function get(string $aggregateType, string $aggregateId): ?Snapshot
@@ -98,7 +107,7 @@ final class MongoDbSnapshotStore implements SnapshotStore
 
         $destination = $this->createStream();
         stream_copy_to_stream($stream, $destination);
-        $aggregateRoot = unserialize(stream_get_contents($destination, -1, 0));
+        $aggregateRoot = $this->serializer->unserialize(stream_get_contents($destination, -1, 0));
 
         return new Snapshot(
             $aggregateType,
@@ -129,7 +138,7 @@ final class MongoDbSnapshotStore implements SnapshotStore
 
             $bucket->uploadFromStream(
                 $aggregateId,
-                $this->createStream(serialize($snapshot->aggregateRoot())),
+                $this->createStream($this->serializer->serialize($snapshot->aggregateRoot())),
                 [
                     '_id' => $aggregateId,
                     'metadata' => [

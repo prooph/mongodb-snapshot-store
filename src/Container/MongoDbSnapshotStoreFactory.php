@@ -18,7 +18,9 @@ use Interop\Config\RequiresConfigId;
 use Interop\Config\RequiresMandatoryOptions;
 use MongoDB\Driver\ReadConcern;
 use MongoDB\Driver\WriteConcern;
+use Prooph\SnapshotStore\CallbackSerializer;
 use Prooph\SnapshotStore\MongoDb\MongoDbSnapshotStore;
+use Prooph\SnapshotStore\Serializer;
 use Psr\Container\ContainerInterface;
 
 class MongoDbSnapshotStoreFactory implements ProvidesDefaultOptions, RequiresConfigId, RequiresMandatoryOptions
@@ -71,13 +73,16 @@ class MongoDbSnapshotStoreFactory implements ProvidesDefaultOptions, RequiresCon
             $config['write_concern']['journal']
         );
 
+        $serializer = $config['serializer'] instanceof Serializer ? $config['serializer'] : $container->get($config['serializer']);
+
         return new MongoDbSnapshotStore(
             $client,
             $config['db_name'],
             $config['snapshot_grid_fs_map'],
             $config['default_snapshot_grid_fs_name'],
             $readConcern,
-            $writeConcern
+            $writeConcern,
+            $serializer
         );
     }
 
@@ -102,6 +107,7 @@ class MongoDbSnapshotStoreFactory implements ProvidesDefaultOptions, RequiresCon
                 'wtimeout' => 0, // How long to wait (in milliseconds) for secondaries before failing.
                 'journal' => false, // Wait until mongod has applied the write to the journal.
             ],
+            'serializer' => new CallbackSerializer(null, null),
         ];
     }
 
