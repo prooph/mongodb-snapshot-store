@@ -21,7 +21,7 @@ You can install prooph/mongodb-snapshot-store via composer by adding `"prooph/mo
 ## Support
 
 - Ask questions on [prooph-users](https://groups.google.com/forum/?hl=de#!forum/prooph) mailing list.
-- File issues at [https://github.com/prooph/event-store/issues](https://github.com/prooph/event-store/issues).
+- File issues at [https://github.com/prooph/mongodb-snapshot-store/issues](https://github.com/prooph/mongodb-snapshot-store/issues).
 - Say hello in the [prooph gitter](https://gitter.im/prooph/improoph) chat.
 
 ## Contribute
