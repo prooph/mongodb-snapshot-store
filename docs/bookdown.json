@@ -1,9 +1,11 @@
 {
-  "title": "Prooph PDO SnapshotStore",
+  "title": "MongoDB Snapshot Store",
   "content": [
-    {"intro": "../README.md"},
+    {"intro": "introduction.md"},
     {"interop_factories": "interop_factories.md"}
   ],
+  "tocDepth": 1,
+  "numbering": false,
   "target": "./html",
   "template": "../vendor/prooph/bookdown-template/templates/main.php"
 }
