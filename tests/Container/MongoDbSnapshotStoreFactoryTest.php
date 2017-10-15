@@ -72,7 +72,9 @@ class MongoDbSnapshotStoreFactoryTest extends TestCase
 
         $container->get('my_connection')->willReturn($client)->shouldBeCalled();
         $container->get('config')->willReturn($config)->shouldBeCalled();
-        $container->get('serializer_servicename')->willReturn(new CallbackSerializer(function() {}, function() {}))->shouldBeCalled();
+        $container->get('serializer_servicename')->willReturn(new CallbackSerializer(function () {
+        }, function () {
+        }))->shouldBeCalled();
 
         $factory = new MongoDbSnapshotStoreFactory();
         $snapshotStore = $factory($container->reveal());
