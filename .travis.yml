@@ -13,6 +13,14 @@ matrix:
       env:
         - DEPENDENCIES="--prefer-lowest --prefer-stable"
         - SERVER_VERSION=3.4.2
+    - php: 7.2
+      env:
+        - DEPENDENCIES=""
+        - SERVER_VERSION=3.4.2
+    - php: 7.2
+      env:
+        - DEPENDENCIES="--prefer-lowest --prefer-stable"
+        - SERVER_VERSION=3.4.2
 
 cache:
   directories:
