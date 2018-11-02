@@ -1,6 +1,7 @@
 <?php
+
 /**
- * This file is part of the prooph/mongodb-snapshot-store.
+ * This file is part of prooph/mongodb-snapshot-store.
  * (c) 2016-2018 prooph software GmbH <contact@prooph.de>
  * (c) 2016-2018 Sascha-Oliver Prolic <saschaprolic@googlemail.com>
  *
@@ -51,7 +52,7 @@ class MongoDbSnapshotStoreFactory implements ProvidesDefaultOptions, RequiresCon
     {
         if (! isset($arguments[0]) || ! $arguments[0] instanceof ContainerInterface) {
             throw new \InvalidArgumentException(
-                sprintf('The first argument must be of type %s', ContainerInterface::class)
+                \sprintf('The first argument must be of type %s', ContainerInterface::class)
             );
         }
 

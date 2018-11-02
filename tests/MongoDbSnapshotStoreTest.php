@@ -1,6 +1,7 @@
 <?php
+
 /**
- * This file is part of the prooph/mongodb-snapshot-store.
+ * This file is part of prooph/mongodb-snapshot-store.
  * (c) 2016-2018 prooph software GmbH <contact@prooph.de>
  * (c) 2016-2018 Sascha-Oliver Prolic <saschaprolic@googlemail.com>
  *
@@ -41,8 +42,8 @@ class MongoDbSnapshotStoreTest extends TestCase
         $aggregateRoot = ['name' => 'Sascha'];
         $aggregateType = 'user';
 
-        $time = (string) microtime(true);
-        if (false === strpos($time, '.')) {
+        $time = (string) \microtime(true);
+        if (false === \strpos($time, '.')) {
             $time .= '.0000';
         }
 
@@ -76,8 +77,8 @@ class MongoDbSnapshotStoreTest extends TestCase
         $aggregateRoot = ['name' => 'Sascha'];
         $aggregateType = 'user';
 
-        $time = (string) microtime(true);
-        if (false === strpos($time, '.')) {
+        $time = (string) \microtime(true);
+        if (false === \strpos($time, '.')) {
             $time .= '.0000';
         }
 
@@ -126,9 +127,9 @@ class MongoDbSnapshotStoreTest extends TestCase
         $aggregateType = \stdClass::class;
         $aggregateRoot = new \stdClass();
         $aggregateRoot->foo = 'bar';
-        $time = (string) microtime(true);
+        $time = (string) \microtime(true);
 
-        if (false === strpos($time, '.')) {
+        if (false === \strpos($time, '.')) {
             $time .= '.0000';
         }
 
