@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the prooph/mongodb-snapshot-store.
  * (c) 2016-2018 prooph software GmbH <contact@prooph.de>
@@ -106,8 +107,8 @@ final class MongoDbSnapshotStore implements SnapshotStore
         $lastVersion = $metadata->metadata->last_version;
 
         $destination = $this->createStream();
-        stream_copy_to_stream($stream, $destination);
-        $aggregateRoot = $this->serializer->unserialize(stream_get_contents($destination, -1, 0));
+        \stream_copy_to_stream($stream, $destination);
+        $aggregateRoot = $this->serializer->unserialize(\stream_get_contents($destination, -1, 0));
 
         return new Snapshot(
             $aggregateType,
@@ -157,10 +158,10 @@ final class MongoDbSnapshotStore implements SnapshotStore
 
         if ($gridFsName !== $this->defaultSnapshotGridFsName) {
             // it's faster to just drop the entire collection
-            $this->client->selectCollection($this->dbName, sprintf('%s.files', $gridFsName))->drop([
+            $this->client->selectCollection($this->dbName, \sprintf('%s.files', $gridFsName))->drop([
                 'writeConcern' => $this->writeConcern,
             ]);
-            $this->client->selectCollection($this->dbName, sprintf('%s.chunks', $gridFsName))->drop([
+            $this->client->selectCollection($this->dbName, \sprintf('%s.chunks', $gridFsName))->drop([
                 'writeConcern' => $this->writeConcern,
             ]);
 
@@ -198,9 +199,9 @@ final class MongoDbSnapshotStore implements SnapshotStore
      */
     private function createStream(string $data = '')
     {
-        $stream = fopen('php://temp', 'w+b');
-        fwrite($stream, $data);
-        rewind($stream);
+        $stream = \fopen('php://temp', 'w+b');
+        \fwrite($stream, $data);
+        \rewind($stream);
 
         return $stream;
     }
